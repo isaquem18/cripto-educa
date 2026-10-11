@@ -1,0 +1,16 @@
+{
+  "apphosting": {
+    "backendId": "thecrypto",
+    "rootDir": "/",
+    "ignore": [
+      "node_modules",
+      ".git",
+      ".next",
+      ".claude",
+      ".firebase",
+      "firebase-debug.log",
+      "firebase-debug.*.log",
+      "*.tsbuildinfo"
+    ]
+  }
+}

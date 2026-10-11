@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TheCrypto
 
-## Getting Started
+An educational website about cryptocurrencies and crypto exchanges, built with Next.js. It is served at [thecrypto.com.br](https://thecrypto.com.br) through Firebase App Hosting.
 
-First, run the development server:
+## Features
+
+- **Learning paths**: 23 lessons across four tracks (fundamentals, exchanges, security and custody, risk and strategy), with progress saved in the browser.
+- **Exchange guide**: CEX vs DEX vs brokers vs P2P, the trade lifecycle, a breakdown of fees, red flags, an interactive due-diligence checklist and a live directory of top exchanges by trust score.
+- **Live markets**: top 100 assets with prices, 24h and 7d changes, market cap, volume, sparklines, global market stats and top movers, in USD or BRL.
+- **Tools**: live crypto converter, dollar-cost averaging backtester using real price history, exchange fee calculator and leverage/liquidation calculator.
+- **Glossary**: 90 searchable terms grouped by category.
+- **Quiz**: 40 questions with explanations and links to the related lessons.
+- SEO metadata, sitemap, robots, Open Graph image and JSON-LD.
+
+## Stack
+
+- Next.js 16 (App Router, Cache Components) with strict TypeScript
+- Tailwind CSS 4
+- TanStack React Query for server state
+- Zustand for client state (persisted preferences, learning progress, quiz history)
+- axios for every HTTP call, zod for validation
+
+Market data comes from the public [CoinGecko API](https://www.coingecko.com/en/api). Route handlers under `app/api` proxy CoinGecko with an in-memory cache that serves the last good snapshot (flagged as delayed) when the provider is unavailable.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Both are optional. Copy `.env.example` to `.env.local` to set them.
 
-## Learn More
+| Variable | Description |
+|---|---|
+| `COINGECKO_API_URL` | Base URL of the CoinGecko API. Defaults to the public endpoint. |
+| `COINGECKO_API_KEY` | CoinGecko demo API key for higher rate limits. |
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start the development server |
+| `pnpm build` | Create a production build |
+| `pnpm start` | Serve the production build |
+| `pnpm lint` | Run ESLint (comments are not allowed in source files) |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+The app is deployed to Firebase App Hosting. `firebase.json` targets the `thecrypto` backend and `apphosting.yaml` holds the Cloud Run settings.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npx firebase-tools deploy --only apphosting --project <firebase-project-id>
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Disclaimer
+
+All content is for educational purposes only and is not financial, investment, legal or tax advice.
