@@ -37,7 +37,11 @@ export function MarketOverviewCards() {
     {
       label: "24h trading volume",
       value: formatCompactMoney(overview.totalVolume24h, currency),
-      detail: <span className="text-sm text-muted">across tracked markets</span>,
+      detail: (
+        <span className="text-sm text-muted">
+          {overview.volumeSource === "global" ? "across tracked markets" : "top 100 assets"}
+        </span>
+      ),
     },
     {
       label: "Bitcoin dominance",

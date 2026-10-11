@@ -37,9 +37,12 @@ export type CoinMarket = {
   sparkline7d: number[];
 };
 
+export type VolumeSource = "global" | "top-assets";
+
 export type MarketOverview = {
   totalMarketCap: number;
   totalVolume24h: number;
+  volumeSource: VolumeSource;
   marketCapChange24h: number;
   bitcoinDominance: number;
   ethereumDominance: number;

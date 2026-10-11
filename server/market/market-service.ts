@@ -15,6 +15,7 @@ const OVERVIEW_FRESH_MS = 120_000;
 const HISTORY_FRESH_MS = 60 * 60 * 1000;
 const MARKET_PAGE_SIZE = 100;
 const SPARKLINE_TARGET_POINTS = 48;
+const MAX_PLAUSIBLE_VOLUME_TO_MARKET_CAP_RATIO = 1;
 
 type CoingeckoMarketCoin = {
   id: string;
@@ -101,13 +102,26 @@ export async function listCoinMarkets(currency: FiatCurrency): Promise<MarketSna
   });
 }
 
+function isPlausibleVolume(volume: number, marketCap: number) {
+  return volume > 0 && marketCap > 0 && volume <= marketCap * MAX_PLAUSIBLE_VOLUME_TO_MARKET_CAP_RATIO;
+}
+
+async function sumTopAssetVolumes(currency: FiatCurrency) {
+  const { data: coins } = await listCoinMarkets(currency);
+  return coins.reduce((total, coin) => total + coin.volume24h, 0);
+}
+
 export async function getMarketOverview(currency: FiatCurrency): Promise<MarketSnapshot<MarketOverview>> {
   return readThroughCache(`overview:${currency}`, OVERVIEW_FRESH_MS, async () => {
     const { data } = await coingeckoClient.get<CoingeckoGlobalResponse>("/global");
     const global = data.data;
+    const totalMarketCap = global.total_market_cap[currency] ?? 0;
+    const globalVolume = global.total_volume[currency] ?? 0;
+    const hasPlausibleGlobalVolume = isPlausibleVolume(globalVolume, totalMarketCap);
     return {
-      totalMarketCap: global.total_market_cap[currency] ?? 0,
-      totalVolume24h: global.total_volume[currency] ?? 0,
+      totalMarketCap,
+      totalVolume24h: hasPlausibleGlobalVolume ? globalVolume : await sumTopAssetVolumes(currency),
+      volumeSource: hasPlausibleGlobalVolume ? "global" : "top-assets",
       marketCapChange24h: global.market_cap_change_percentage_24h_usd,
       bitcoinDominance: global.market_cap_percentage.btc ?? 0,
       ethereumDominance: global.market_cap_percentage.eth ?? 0,
